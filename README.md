@@ -1,16 +1,17 @@
 # public-teksystems-cybersecurity
-Cybersecurity-teksystems 
+**Cybersecurity-teksystems**
 
-This repo contains three different Parts.
-Part 1 : CyberSecurity Scenario
+* This repo contains three different Parts.
 
-This includes the answer for different cybersecurity scenarios in Word format.
+*Part 1 : CyberSecurity Scenario*
 
-Part 2: Container Security Implementation
+* This includes the answer for different cybersecurity scenarios in Word format.
 
-This includes best practices for docker and kubernetes.
+*Part 2: Container Security Implementation*
 
-Part 3: CICD principles
+* This includes best practices for docker and kubernetes.
 
-This includes Ansible implementation for web server
-This includes Jenkinsfile for CICD process with security guidelines.
+*Part 3: CICD principles*
+
+* This includes Ansible implementation for web server
+* This includes Jenkinsfile for CICD process with security guidelines.
