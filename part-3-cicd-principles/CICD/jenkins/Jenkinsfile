@@ -1,0 +1,90 @@
+pipeline {
+	agent 'linux' // assuming there is agent called linux
+	//assuming this agent has attached IAM roles to create/update as well as upload to s3 bucket
+	//assuming s3 bucket is already created.
+
+	environment { // all env variable will have env as prefix
+		env_lambda_name = "lambda-web". // lambda function name
+		env_region = "us-east-1"
+		env_s3_bucket = "lambda-web-s3-" + env_region
+		env_s3_key = "lambda-web-function.zip"
+		// Will be using synk to scan the code
+		env_synk_api_token = credentials('synk-api-token')
+	}
+
+	stages {
+		stage ('Checkout'){
+			steps {
+				checkout scm //checking out the repo
+			}
+		}
+
+		stage ('Linting'){
+			steps {
+				sh 'pylint *.py' // Running linting
+			}
+		}
+
+		stage ('Run Unit Tests'){
+			steps {
+				sh 'pytest' // assuming there is unit test so that we can run pytest
+			}
+		}
+
+		stage ('Install dependencies'){
+			steps {
+				sh 'pip install -r requirements.txt -t .' // assuming the application code has requirements to install for dependencies
+			}
+		}
+
+		stage ('Security Scan with Synk'){
+			steps {
+				// Running synk cli with severity high, so that if there is any high or critical severity
+				// the pipeline fails.
+				sh """
+					synk auth ${env_synk_api_token}
+					synk test --all-projects --severity-threshold=high
+				"""
+			}
+		}
+
+		stage ('Build and Package'){
+			steps {
+				sh 'pip install -r requirements.txt -t .' // assuming the application code has requirements to install for dependencies
+				sh """
+					zip -r9 ${WORKSPACE}/${env_s3_key} . 
+				""" //zipping the function 
+			}
+		}
+
+		stage('Upload Artifactory') {
+			steps {
+				sh """
+					aws s3 cp ${WORKSPACE}/${env_s3_key} s3://${env_s3_bucket}/${env_s3_key} --region ${env_region}
+				"""
+			}
+		}
+
+		stage('Deploy'){
+			steps {
+				sh """
+					aws lambda update-function-code --function-name ${env_lambda_name} \
+					--s3-bucket ${env_s3_bucket} --s3-key ${env_s3_key} --region ${env_region}
+				"""
+			}
+		}
+	}
+
+	post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
+}

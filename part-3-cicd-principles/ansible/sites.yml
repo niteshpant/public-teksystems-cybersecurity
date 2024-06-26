@@ -1,0 +1,8 @@
+- name: Install webservers
+  hosts: webservers
+  gather_facts: no
+  become: yes
+  remote_user: ubuntu # ansible user needs to be setup on remote hosts
+  become_method: sudo
+  roles:
+    - role: webserver

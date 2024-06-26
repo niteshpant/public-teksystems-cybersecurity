@@ -1,0 +1,27 @@
+---
+# tasks file for webserver
+
+- name: update apt
+  apt:
+    update_cache: yes
+
+- name: install nginx
+  ansible.builtin.package:
+    name: nginx
+    state: latest
+
+- name: copy nginx config
+  ansible.builtin.template:
+    src: nginx.conf.template
+    dest: /etc/nginx/sites-enabled/webserver.conf
+    owner: root
+    group: root
+  notify: restart
+
+- name: copy index.html
+  ansible.builtin.copy:
+    src: files/index.html
+    dest: /var/www/html/index.html
+    owner: foo
+    group: foo
+    mode: '0644'
