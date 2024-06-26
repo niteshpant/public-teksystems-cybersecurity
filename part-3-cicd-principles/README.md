@@ -1,15 +1,17 @@
 
 **Ansible deployment**
 
-To run the ansible code, you need to make sure you have ansible-playbook installed on your system
+To run the ansible code, you need to make sure you have ansible-playbook installed on your system. Following command will install ansible-playbook on your machine.
+
 `python3 -m install pip install ansible-core`
 
-This should do the work to install ansible.
 
 There is hosts.ini file, which is basically an inventory file (currently empty with ip or domain name) but need to populate the file.
+
 There is sites.yml file, to tell which tasks to run
 
 To run the ansible, you need to do
+
 `ansible-playbook -i hosts.ini sites.yml`
 
 
