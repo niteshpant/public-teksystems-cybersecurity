@@ -22,6 +22,6 @@
   ansible.builtin.copy:
     src: files/index.html
     dest: /var/www/html/index.html
-    owner: foo
-    group: foo
+    owner: root
+    group: root
     mode: '0644'
